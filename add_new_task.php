@@ -21,9 +21,9 @@ if (count($checkResult) > 0) {
     echo "Il y a déjà une tâche avec ce titre dans la base de donnée";
 } else {
     //Insertion dans la base de donnée
-    $insertRecipe = $db->prepare("INSERT INTO tasks(taskname, tasktext) VALUES (:title, :text)");
+    $insertTask = $db->prepare("INSERT INTO tasks(taskname, tasktext) VALUES (:title, :text)");
 
-    $insertRecipe->execute([
+    $insertTask->execute([
         'title' => $title,
         'text' => $text
     ]);

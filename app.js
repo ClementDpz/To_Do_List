@@ -5,7 +5,7 @@ let tasksList = document.querySelector("#tasksList");
 
 //Ouverture de la page : Chargement des tâches dans la bdd
 //Ajax pour récupérer les données
-var req = new XMLHttpRequest();
+let req = new XMLHttpRequest();
 
 req.onreadystatechange = function () {
     if (req.readyState == 4) {
@@ -14,10 +14,12 @@ req.onreadystatechange = function () {
 
             databaseResult.forEach(elt => {
                 let tmpDiv = document.createElement("div");
-                tmpDiv.classList.add("task")
+                tmpDiv.classList.add("task");
+
+                tmpDiv.id = elt.taskid;
 
                 let checkBoxElement = document.createElement("input");
-                checkBoxElement.setAttribute("type", "checkbox")
+                checkBoxElement.setAttribute("type", "checkbox");
 
                 let titleElement = document.createElement("h2");
                 titleElement.innerHTML = elt.taskname;
@@ -25,9 +27,29 @@ req.onreadystatechange = function () {
                 let textElement = document.createElement("p");
                 textElement.innerHTML = elt.tasktext;
 
+                let btnDelete = document.createElement("button");
+                btnDelete.innerHTML = "Supprimer";
+
+                btnDelete.addEventListener("click", function(e) {
+                    let data = "id=" + e.target.parentNode.id;
+                    //Ajax pour envoyer la requete au PHP
+                    let ajaxReq = new XMLHttpRequest();
+
+                    ajaxReq.onreadystatechange = function () {
+                        if (ajaxReq.readyState == 4) {
+                            window.location.reload();
+                        }
+                    }
+
+                    ajaxReq.open("POST", "delete_task.php", true);
+                    ajaxReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    ajaxReq.send(data);
+                });
+
                 tmpDiv.appendChild(checkBoxElement);
                 tmpDiv.appendChild(titleElement);
                 tmpDiv.appendChild(textElement);
+                tmpDiv.appendChild(btnDelete);
 
                 tasksList.appendChild(tmpDiv);
             });
@@ -45,15 +67,11 @@ submitButton.addEventListener("click", function() {
         let data = "title=" + titleTask.value +  "&text=" + textTask.value;
 
         //Ajax pour envoyer la requete au PHP
-        var ajaxReq = new XMLHttpRequest();
+        let ajaxReq = new XMLHttpRequest();
 
         ajaxReq.onreadystatechange = function () {
             if (ajaxReq.readyState == 4) {
-                if (ajaxReq.status == 200) {
-                    console.log("Message : " + ajaxReq.responseText);
-                } else {
-                    console.error("Erreur : " + ajaxReq.responseText)
-                }
+                window.location.reload();
             }
         }
 
@@ -62,6 +80,6 @@ submitButton.addEventListener("click", function() {
         ajaxReq.send(data);
     } else {
         //Erreur
-        console.error("Il faut saisir le titre et le texte de la tâche à ajouter");
+        window.alert("Erreur : Il faut saisir le titre et le texte de la tâche à ajouter");
     }
 });
